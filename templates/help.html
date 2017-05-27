@@ -1,0 +1,160 @@
+<section id="about">
+<h2>Introduction</h2>
+<p class="long">
+This web application is designed for analysing thermal shift data.
+Thermal shift, thermofluor, or differential scanning fluorimetry,
+is an experiment measuring the thermal denaturation of a protein.
+A dye is added that binds non-specifically to the hydrophobic regions of a protein.
+As the protein is heated and starts to melt there will be an increase in the fluorescence of the dye
+as more hydrophobic regions become exposed.
+</p>
+<p class="long">
+Thermal shift experiments are often done in a high throughput manner using a plate reader
+and can be used to study the effect of varying conditions or to screen ligands for binding.
+This application helps with the process by fitting a curve to the raw data,
+allowing for fast and accurate estimation of the melting temperature
+and the ability to report on other parameters such as the gradient of the curve.
+It also aims to provide a simple method of analysing the data.
+</p>
+</section>
+
+<section id="data_storage">
+<h2>Data Storage</h2>
+<p class="long">
+All data used in this application are held locally on the computer using it
+with nothing uploaded to any remote servers.
+Any data saved between sessions are saved using
+<a href="http://www.w3schools.com/html/html5_webstorage.asp">local storage</a>.
+This site does not use cookies.
+</p>
+<p class="long">
+It is recommended that data sets are removed after analysis
+as most browsers impose a local storage quota and problems could occur as you approach this limit.
+Depending on the size of your data and the browser you are using the amount of storage available will vary.
+</p>
+<p>
+Data sets can be removed from browser local storage while maintaining the plate layout and fitted curves
+using the <b>Export</b> function on the <b>Input</b> page.
+Exported data sets can be imported again using the <b>Import Existing Data Set</b> form.
+</p>
+</section>
+
+<section id="data_input">
+<h2>Data Input</h2>
+<p class="long">
+Input files can be uploaded using the <b>New Data Set</b> form.
+Files must be in a delimited file format (e.g. CSV or TSV)
+and contain a header row with column names <b>Well</b>, <b>Temperature</b> and <b>Fluorescence</b> (case-insensitive).
+Other columns will be ignored.
+Any number of lines can be present before the header row provided one of those lines doesn't contain these three keywords.
+</p>
+<p class="long">
+Each row of the input file should represent a fluorescence reading.
+There can be multiple readings at a single temperature,
+which could be the case when handling raw data from a qPCR machine.
+The <b>Well</b> column is expected to contain integers representing well identifiers for a 96 well plate (1 = A01, 2 = A02, etc.)
+A small <a href="data/example.csv" download>example file</a> is provided as a reference.
+</p>
+</section>
+
+<section id="curve_fitting">
+<h2>Curve Fitting</h2>
+<p class="long">
+The curve fitting algorithm first identifies which of the raw data points should be included in the calculation.
+Points to the right (higher temperature) of the highest fluorescence are discarded,
+then points to the left of the lowest fluorescence are discarded.
+The remaining points are fitted with a curve using non-linear least squares regression,
+more specifically the <a href="https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm">Levenberg–Marquardt algorithm</a>.
+Two models can be chosen: a five parameter sigmoid equation (Sigmoid-5) or a four parameter sigmoid equation (Boltzmann).
+</p>
+<img class="equation" src="images/sigmoid5.png">
+<img class="equation" src="images/boltzmann.png">
+<p class="long">
+Where <b>n</b> is the minimum asymptote, <b>m</b> is the maximum asymptote,
+<b>t</b> is a variable with units of temperature from which we can derive the melting point,
+<b>a</b> is the Hill slope relating to the steepness of the curve and
+<b>c</b> is an asymmetry factor that allows different gradients around the asymptotes.
+Both <b>n</b> and <b>m</b> are kept fixed at the mininum and maximum fluorescence respectively
+but <b>t</b>, <b>a</b> and <b>c</b> are allowed to vary without bounds.
+</p>
+</section>
+
+<section id="melting_temperature">
+<h2>Melting Temperature</h2>
+<p class="long">
+If the symmetric Boltzmann model was used in curve fitting then the midpoint of the curve is simply the parameter <b>t</b>.
+When using the asymmetric Sigmoid-5 curve the the melting temperature can be measured as either the <b>Midpoint</b>
+or the <b>Inflection</b> point of the curve.
+</p>
+<img class="equation" src="images/midpoint.png">
+<img class="equation" src="images/inflection.png">
+<p class="long">
+The <b>Midpoint</b> should be closer to melting temperatures obtained by fitting a Boltzmann curve.
+The <b>Inflection</b> point should be closer to melting temperatures obtained by finding a maximum
+after numerical differentiation of the melting curve.
+Numerical differentiation is not implemented in this application but is available in most qPCR processing software.
+</p>
+</section>
+
+<section id="curve_chart">
+<h2>Curve Chart</h2>
+<p class="long">
+The chart on the analysis page displays the melting curves for the currently selected wells.
+Controls are available to show/hide the raw data <b>Points</b> and the <b>Model</b>,
+to <b>Zoom</b> into the fitted region and to <b>Normalise</b> the data.
+Data are normalised using the maximum and minimum fluorescence of the fitted region if avaliable, otherwise the raw data is used.
+</p>
+<p class="long">
+An image of the chart can be downloaded in Scalable Vector Graphics (SVG) format using the <b>Export SVG</b> button.
+These SVG files can be viewed in a web browser
+or converted to other formats (JPEG, PNG, etc.) using online tools or vector graphics software.
+</p>
+</section>
+
+<section id="plate_layout">
+<h2>Plate Layout</h2>
+<p class="long">
+Under the curve chart is a representation of the plate allowing selection of individual wells, rows and columns,
+as well as the whole plate (rendering of this may be slow).
+Selected wells are highlighted in blue and their well types can be changed to
+<b>Reference</b>, <b>Blank</b>, <b>Control</b> or <b>Assay</b> using the controls on the left.
+Only the reference wells have special meaning
+as the average and standard deviation are used to calculate <b>ΔTm</b> and <b>ΔTm / &sigma;</b>.
+</p>
+<p class="long">
+The controls on the right of the plate layout are used to refit curves to the selected wells.
+The <b>Min T</b> and <b>Max T</b> inputs display the currently fitted region by default,
+but can be changed to refit a specific subset of the data.
+</p>
+</section>
+
+<section id="data_table">
+<h2>Data Table</h2>
+<p class="long">
+The data table can also be used for selecting and deselecting wells.
+Text columns can be filtered by typing some text into the box below the column header,
+in which case only values that contain the text (case-insensitive) will be shown.
+Numeric columns can be filtered by typing number, in which case only values that can round to the number will be shown.
+Numbers can also be preceeded by a <b>&lt;</b> or <b>&gt;</b> sign to filter values less than or greater than the number respectively.
+</p>
+<p class="long">
+The <b>Select</b> and <b>Deselect</b> buttons will select and deselect the filtered wells.
+The <b>Export CSV</b> button will download the contents of the unfiltered table to a CSV file.
+</p>
+</section>
+
+<section id="config">
+<h2>Config</h2>
+<p class="long">
+The config page allows you to save different configuration values for each data set.
+You can use the <b>Save Default</b> button to save the current configuration as the default to be used for new data sets.
+The <b>Load Default</b> will load the settings saved in the default configuration
+and the the <b>Reset Default</b> button will provide a factory reset of the default configuration. 
+</p>
+<p class="long">
+The <b>Curve Fitting</b> options let you switch between the <b>Sigmoig-5</b> and <b>Boltzmann</b> equations,
+and to choose which melting temperature estimation you would like to report on.
+Changing the <b>Model Function</b> will refit all curves automatically.
+There are also options to change the chart axis labels, which can be left blank to remove the label.
+</p>
+</section>

@@ -1,0 +1,66 @@
+<div class="controls">
+  <div class="row">
+    <div class="col-3"><button ng-click="openCsv()">Export CSV</button></div>
+    <div class="col-3"><button ng-click="selectAll(filteredIds())">Select</button></div>
+    <div class="col-3"><button ng-click="deselectAll(filteredIds())">Deselect</button></div>
+  </div>
+
+  <div class="scroll">
+  <table class="table">
+    <thead>
+      <tr>
+        <th ng-click="sortBy('name')" ng-class="classFor('name')">Name</th>
+        <th ng-click="sortBy('type')" ng-class="classFor('type')">Type</th>
+        <th ng-click="sortBy('tm')" ng-class="classFor('tm')">Tm</th>
+        <th ng-click="sortBy('dTm')" ng-class="classFor('dTm')">ΔTm</th>
+        <th ng-click="sortBy('dTmDev')" ng-class="classFor('dTmDev')">ΔTm / &sigma;</th>
+        <th ng-click="sortBy('r2')" ng-class="classFor('r2')">R<sup>2</sup></th>
+        <th ng-click="sortBy('minT')" ng-class="classFor('minT')">Min T</th>
+        <th ng-click="sortBy('maxT')" ng-class="classFor('maxT')">Max T</th>
+        <th ng-click="sortBy('minF')" ng-class="classFor('minF')">Min F</th>
+        <th ng-click="sortBy('maxF')" ng-class="classFor('maxF')">Max F</th>
+        <th ng-click="sortBy('t')" ng-class="classFor('t')">t</th>
+        <th ng-click="sortBy('a')" ng-class="classFor('a')">a</th>
+        <th ng-click="sortBy('c')" ng-class="classFor('c')">c</th>
+        <th ng-click="sortBy('comment')" ng-class="classFor('comment')">Comment</th>
+      </tr>
+      <tr>
+        <td><input type="text" ng-model="nameFilter"></td>
+        <td><input type="text" ng-model="typeFilter"></td>
+        <td><input type="text" ng-model="tmFilter"></td>
+        <td><input type="text" ng-model="dTmFilter"></td>
+        <td><input type="text" ng-model="dTmDevFilter"></td>
+        <td><input type="text" ng-model="r2Filter"></td>
+        <td><input type="text" ng-model="minTFilter"></td>
+        <td><input type="text" ng-model="maxTFilter"></td>
+        <td><input type="text" ng-model="minFFilter"></td>
+        <td><input type="text" ng-model="maxFFilter"></td>
+        <td><input type="text" ng-model="tFilter"></td>
+        <td><input type="text" ng-model="aFilter"></td>
+        <td><input type="text" ng-model="cFilter"></td>
+        <td><input type="text" ng-model="commentFilter"></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="well in filteredWells() | orderBy:sortProp:sortReverse"
+          ng-class="{selected: isSelected(well)}"
+          ng-click="selectDeselect([well.id])">
+        <td>{{ well.name }}</td>
+        <td>{{ well.type }}</td>
+        <td>{{ well.tm | number:1 }}</td>
+        <td>{{ well.dTm | number:2 }}</td>
+        <td>{{ well.dTmDev | number:2 }}</td>
+        <td>{{ well.r2 | number:3 }}</td>
+        <td>{{ well.minT | number:1 }}</td>
+        <td>{{ well.maxT | number:1 }}</td>
+        <td>{{ well.minF | number:0 }}</td>
+        <td>{{ well.maxF | number:0 }}</td>
+        <td>{{ well.t | number:1 }}</td>
+        <td>{{ well.a | number:3 }}</td>
+        <td>{{ well.c | number:3 }}</td>
+        <td>{{ well.comment }}</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>

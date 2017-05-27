@@ -1,0 +1,14 @@
+<h3>Model Fitting</h3>
+<form ng-submit="refit()" novalidate>
+  <div class="row">
+    <div class="col-2">
+      <label>Min T<input type="number" ng-model="minT"></label>
+    </div>
+    <div class="col-2">
+      <label>Max T<input type="number" ng-model="maxT"></label>
+    </div>
+  </div>
+  <input type="submit" value="{{ validRange() ? 'Refit' : 'Invalid Range' }}"
+          ng-disabled="!validRange()">
+</form>
+<button ng-click="removeFit()">Remove Fit</button>

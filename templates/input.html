@@ -1,0 +1,49 @@
+<h2>New Data Set</h2>
+<form id="input_form" ng-submit="submitInputForm()" novalidate>
+  <label for="input_name">Name</label>
+  <input type="text" id="input_name" ng-model="inputForm.name">
+
+  <label for="input_file">File</label>
+  <input type="file" id="input_file" jtsa-file-model="inputForm.file">
+
+  <input type="submit" value="{{ inputForm.todo || 'Process' }}"
+         ng-disabled="inputForm.todo">
+</form>
+
+<h2>Import Existing Data Set</h2>
+<form id="import_form" ng-submit="submitImportForm()" novalidate>
+  <label for="import_name">Name</label>
+  <input type="text" id="import_name" ng-model="importForm.name">
+
+  <label for="import_file">File</label>
+  <input type="file" id="import_file" jtsa-file-model="importForm.file">
+
+  <input type="submit" value="{{ importForm.todo || 'Import' }}"
+         ng-disabled="importForm.todo">
+</form>
+
+<div ng-show="store.dataSets.length > 0">
+  <h2>Saved Data Sets</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Date Added</th>
+        <th>Date Modified</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="dataSet in store.dataSets | orderBy:'name'"
+          ng-class="{selected: dataSet === store.selectedDataSet}"
+          ng-click="store.selectDataSet(dataSet)">
+        <td>{{dataSet.name}}</td>
+        <td>{{dataSet.dateAdded | date:'yyyy-MM-dd HH:mm'}}</td>
+        <td>{{dataSet.dateModified | date:'yyyy-MM-dd HH:mm'}}</td>
+        <td><button ng-click="exportDataSet($event, dataSet)">Export</button></td>
+        <td><button ng-click="removeDataSet($event, dataSet)">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

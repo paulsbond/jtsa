@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html ng-app="app">
+
+<meta charset="utf-8">
+<title>jTSA</title>
+<meta name="author" content="Paul Bond">
+<meta name="description" content="A web application for analysing thermofluor data">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="stylesheet" href="lib/normalize.css">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/app.css">
+
+<jtsa-modal></jtsa-modal>
+
+<div class="container">
+  <header>
+    <h1>jTSA</h1>
+    <jtsa-sub-heading></jtsa-sub-heading>
+  </header>
+  <jtsa-nav></jtsa-nav>
+  <ng-view></ng-view>
+</div>
+
+<script src="lib/angular.min.js"></script>
+<script src="lib/angular-route.min.js"></script>
+<script src="lib/math.min.js"></script>
+<script src="lib/d3.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/nls.js"></script>
+<script src="controllers/AnalysisController.js"></script>
+<script src="controllers/ConfigController.js"></script>
+<script src="controllers/InputController.js"></script>
+<script src="services/analysis.js"></script>
+<script src="services/config.js"></script>
+<script src="services/file.js"></script>
+<script src="services/models.js"></script>
+<script src="services/parser.js"></script>
+<script src="services/plate.js"></script>
+<script src="services/regression.js"></script>
+<script src="services/store.js"></script>
+<script src="directives/jtsa_curve_chart.js"></script>
+<script src="directives/jtsa_data_table.js"></script>
+<script src="directives/jtsa_disabled.js"></script>
+<script src="directives/jtsa_file_model.js"></script>
+<script src="directives/jtsa_fitting_controls.js"></script>
+<script src="directives/jtsa_layout_controls.js"></script>
+<script src="directives/jtsa_modal.js"></script>
+<script src="directives/jtsa_nav.js"></script>
+<script src="directives/jtsa_sub_heading.js"></script>
+<script src="directives/jtsa_well_selector.js"></script>

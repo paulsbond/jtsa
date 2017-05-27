@@ -1,0 +1,15 @@
+<table>
+  <tr>
+    <th ng-click="selectPlate()"></th>
+    <th ng-repeat="col in plate.cols" ng-click="selectCol(col)">{{col}}</th>
+  </tr>
+  <tr ng-repeat="row in plate.rows">
+    <th ng-click="selectRow(row)">{{row}}</th>
+    <td ng-repeat="col in plate.cols"
+        ng-class="wellClass(row, col)"
+        ng-click="selectWell(row, col)"
+        ng-mouseenter="highlight($event, row, col)"
+        ng-mouseleave="unhighlight($event, row, col)">
+        {{ typeSymbol(row, col) }}</td>
+  </tr>
+</table>

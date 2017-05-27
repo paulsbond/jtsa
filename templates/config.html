@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-3"><button ng-click="save()">Save Default</button></div>
+  <div class="col-3"><button ng-click="load()">Load Default</button></div>
+  <div class="col-3"><button ng-click="reset()">Reset Default</button></div>
+</div>
+
+<h2>Curve Fitting</h2>
+<div class="controls row">
+  <div class="col-2">
+    <label>Model Function</label>
+    <select ng-model="config.modelName"
+            ng-options="key as key for (key, value) in models">
+    </select>
+  </div>
+  <div class="col-2">
+    <label>Melting Point</label>
+    <select ng-model="config.tmName"
+            ng-options="key as key for (key, value) in tms">
+    </select>
+  </div>
+</div>
+
+<h2>Curve Chart</h2>
+<div class="controls row">
+  <div class="col-2">
+    <label>X-Axis Label</label>
+    <input type="text" ng-model="config.xLabel">
+  </div>
+  <div class="col-2">
+    <label>Y-Axis Label</label>
+    <input type="text" ng-model="config.yLabel">
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="icons">
+  <button ng-click="downloadChart()">Export SVG</button>
+  <button ng-click="chartOptions.zoom = (chartOptions.zoom == 'full') ? 'fitted' : 'full'">Zoom</button>
+  <button ng-click="chartOptions.showPoints = !chartOptions.showPoints">Points</button>
+  <button ng-click="chartOptions.showModel = !chartOptions.showModel">Model</button>
+  <button ng-click="chartOptions.normalise = !chartOptions.normalise">Normalise</button>
+</div>
+<jtsa-curve-chart></jtsa-curve-chart>
+
+<div class="row">
+  <div class="col-2"><button ng-click="prevWell()">Previous Well</button></div>
+  <div class="col-2"><button ng-click="nextWell()">Next Well</button></div>
+</div>
+
+<div class="row">
+  <div class="col-4 controls">
+    <jtsa-layout-controls></jtsa-layout-controls>
+  </div>
+
+  <div class="col-2">
+    <jtsa-well-selector></jtsa-well-selector>
+  </div>
+
+  <div class="col-4 controls">
+    <jtsa-fitting-controls></jtsa-fitting-controls>
+  </div>
+</div>
+
+<jtsa-data-table></jtsa-data-table>
