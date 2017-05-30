@@ -12,11 +12,12 @@
       store.saveConfig($scope.config);
     };
     $scope.load = function() {
-      var defaultConfig = store.getConfig();
-      $scope.config.xLabel = defaultConfig.xLabel;
-      $scope.config.yLabel = defaultConfig.yLabel;
-      $scope.config.modelName = defaultConfig.modelName;
-      $scope.config.tmName = defaultConfig.tmName;
+      store.getConfig(function(defaultConfig) {
+        $scope.config.xLabel = defaultConfig.xLabel;
+        $scope.config.yLabel = defaultConfig.yLabel;
+        $scope.config.modelName = defaultConfig.modelName;
+        $scope.config.tmName = defaultConfig.tmName;
+      });
     };
     $scope.reset = function() {
       store.saveConfig(config.default());

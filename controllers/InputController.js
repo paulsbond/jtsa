@@ -31,12 +31,14 @@
     $scope.submitInputForm = function() {
       var dataSet = {};
       dataSet.name = $scope.inputForm.name;
-      dataSet.config = store.getConfig();
-      file.read($scope.inputForm.file, function(contents) {
-        dataSet.wells = parser.parseContents(contents);
-        regression.fitDataSet(dataSet);
-        store.addDataSet(dataSet);
-        $scope.$apply(function() { resetInputForm(); });
+      store.getConfig(function(config) {
+        dataSet.config = config;
+        file.read($scope.inputForm.file, function(contents) {
+          dataSet.wells = parser.parseContents(contents);
+          regression.fitDataSet(dataSet);
+          store.addDataSet(dataSet);
+          $scope.$apply(function() { resetInputForm(); });
+        });
       });
     };
 
