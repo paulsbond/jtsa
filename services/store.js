@@ -16,6 +16,40 @@
 
     // Data Sets
 
+    var readLocalStorage = function() {
+      store.dataSets = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (/tfa-dataSet-\d+/.test(key)) {
+          var value = localStorage.getItem(key);
+          var dataSet = angular.fromJson(value);
+          store.dataSets.push(dataSet);
+        }
+      }
+    }
+
+    var readLocalForage = function(callback) {
+      store.dataSets = [];
+      localforage.keys(function(err, keys) {
+        throwErr(err);
+        keysProcessed = 0;
+        keys.forEach(function(key) {
+          if (/jtsa-dataSet-\d+/.test(key)) {
+            localforage.getItem(key, function(err, value) {
+              throwErr(err);
+              store.dataSets.push(value);
+              keysProcessed++;
+              if (keysProcessed == keys.length) callback();
+            });
+          }
+          else {
+            keysProcessed++;
+            if (keysProcessed == keys.length) callback();
+          }
+        })
+      });
+    }
+
     var getFreeId = function(callback) {
       localforage.keys(function(err, keys) {
         throwErr(err);
@@ -52,44 +86,36 @@
       store.selectedDataSet = dataSet;
     };
 
-    store.saveDataSet = function(dataSet) {
+    store.saveDataSet = function(dataSet, callback) {
       if (!dataSet) dataSet = store.selectedDataSet; 
       dataSet.dateModified = Date.now();
-      localforage.setItem(dataSet.id, dataSet, throwErr);
+      localforage.setItem(dataSet.id, dataSet, function(err, value) {
+        throwErr(err);
+        callback(value)
+      });
     };
 
-    // Get datasets from localStorage (keep for backwards compatibility)
-    // Also remove items as datasets will be saved to localforage
+    // Remove old value from localStorage
     localStorage.removeItem('tfa-selectDataSetId');
-    store.dataSets = [];
-    for (var i = 0; i < localStorage.length; i++) {
-      var key = localStorage.key(i);
-      if (/tfa-dataSet-\d+/.test(key)) {
-        var value = localStorage.getItem(key);
-        localStorage.removeItem(key);
-        var dataSet = angular.fromJson(value);
-        store.dataSets.push(dataSet);
-      }
-    }
+    // Get datasets from localStorage (keep for backwards compatibility)
+    readLocalStorage()
     // Convert any datasets from localStorage to localforage
+    // Remove dataset from localStorage if successful
+    // Read from localforage once all datasets are processed
+    var alertDone = function() {
+      console.log('Done reading datasets');
+    }
+    dataSetsProcessed = 0
     store.dataSets.forEach(function(dataSet) {
       getFreeId(function(id) {
         dataSet.id = id;
-        store.saveDataSet(dataSet);
-      })
-    });
-    // Clear store.datasets and read only from localforage
-    store.dataSets = [];
-    localforage.keys(function(err, keys) {
-      throwErr(err);
-      for (var i = 0; i < keys.length; i++) {
-        if (/jtsa-dataSet-\d+/.test(keys[i])) {
-          localforage.getItem(keys[i], function(err, value) {
-            throwErr(err);
-            store.dataSets.push(value);
-          });
-        }
-      }
+        store.saveDataSet(dataSet, function() {
+          var oldKey = 'tfa'+id.slice(4);
+          localStorage.removeItem(oldKey);
+          dataSetsProcessed++;
+          if (dataSetsProcessed == store.dataSets.length) readLocalForage(alertDone);
+        });
+      });
     });
 
     // Config
