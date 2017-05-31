@@ -29,24 +29,29 @@
     }
 
     var readLocalForage = function(callback) {
-      store.dataSets = [];
-      localforage.keys(function(err, keys) {
+      localforage.getItem('jtsa-selectDataSetId', function(err, value) {
         throwErr(err);
-        keysProcessed = 0;
-        keys.forEach(function(key) {
-          if (/jtsa-dataSet-\d+/.test(key)) {
-            localforage.getItem(key, function(err, value) {
-              throwErr(err);
-              store.dataSets.push(value);
+        var selectedDataSet = value;
+        store.dataSets = [];
+        localforage.keys(function(err, keys) {
+          throwErr(err);
+          keysProcessed = 0;
+          keys.forEach(function(key) {
+            if (/jtsa-dataSet-\d+/.test(key)) {
+              localforage.getItem(key, function(err, value) {
+                throwErr(err);
+                store.dataSets.push(value);
+                if (value.id == selectedDataSet) store.selectedDataSet = value;
+                keysProcessed++;
+                if (keysProcessed == keys.length) callback();
+              });
+            }
+            else {
               keysProcessed++;
               if (keysProcessed == keys.length) callback();
-            });
-          }
-          else {
-            keysProcessed++;
-            if (keysProcessed == keys.length) callback();
-          }
-        })
+            }
+          })
+        });
       });
     }
 
@@ -105,18 +110,21 @@
     var alertDone = function() {
       console.log('Done reading datasets');
     }
-    dataSetsProcessed = 0
-    store.dataSets.forEach(function(dataSet) {
-      getFreeId(function(id) {
-        dataSet.id = id;
-        store.saveDataSet(dataSet, function() {
-          var oldKey = 'tfa'+id.slice(4);
-          localStorage.removeItem(oldKey);
-          dataSetsProcessed++;
-          if (dataSetsProcessed == store.dataSets.length) readLocalForage(alertDone);
+    if (store.dataSets.length == 0) readLocalForage(alertDone);
+    else {
+      dataSetsProcessed = 0
+      store.dataSets.forEach(function(dataSet) {
+        getFreeId(function(id) {
+          dataSet.id = id;
+          store.saveDataSet(dataSet, function() {
+            var oldKey = 'tfa'+id.slice(4);
+            localStorage.removeItem(oldKey);
+            dataSetsProcessed++;
+            if (dataSetsProcessed == store.dataSets.length) readLocalForage(alertDone);
+          });
         });
       });
-    });
+    }
 
     // Config
 
