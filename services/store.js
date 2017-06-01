@@ -4,7 +4,8 @@
   app.factory('store', ['config', function(config) {
     var store = {};
 
-    // localforage will prioritise IndexedDB, WebSQL then localStorage
+    // localforage
+
     localforage.config({
       name: 'jtsa',
       description: 'Data storage for the jTSA app'
@@ -12,6 +13,34 @@
 
     var throwErr = function(err) {
       if (err) throw err;
+    };
+
+    var localforageGetItem = function(key, callback) {
+      localforage.getItem(key, function(err, value) {
+        throwErr(err);
+        if (callback) callback(value);
+      });
+    };
+
+    var localforageSetItem = function(key, value, callback) {
+      localforage.setItem(key, value, function(err) {
+        throwErr(err);
+        if (callback) callback();
+      });
+    };
+
+    var localforageRemoveItem = function(key, callback) {
+      localforage.removeItem(key, function(err) {
+        throwErr(err);
+        if (callback) callback();
+      });
+    };
+
+    var localforageKeys = function(callback) {
+      localforage.keys(function(err, keys) {
+        throwErr(err);
+        if (callback) callback(keys);
+      });
     };
 
     // Data Sets
@@ -26,127 +55,140 @@
           store.dataSets.push(dataSet);
         }
       }
-    }
+    };
 
-    var readLocalForage = function(callback) {
-      localforage.getItem('jtsa-selectDataSetId', function(err, value) {
-        throwErr(err);
-        var selectedDataSet = value;
-        store.dataSets = [];
-        localforage.keys(function(err, keys) {
-          throwErr(err);
+    var readLocalforage = function(callback) {
+      store.dataSets = [];
+      localforageGetItem('jtsa-selectDataSetId', function(selectDataSetId) {
+        localforageKeys(function(keys) {
+          if (callback && keys.length == 0) callback();
           keysProcessed = 0;
           keys.forEach(function(key) {
             if (/jtsa-dataSet-\d+/.test(key)) {
-              localforage.getItem(key, function(err, value) {
-                throwErr(err);
-                store.dataSets.push(value);
-                if (value.id == selectedDataSet) store.selectedDataSet = value;
+              localforageGetItem(key, function(dataSet) {
+                store.dataSets.push(dataSet);
+                if (dataSet.id == selectDataSetId) store.selectedDataSet = value;
                 keysProcessed++;
-                if (keysProcessed == keys.length) callback();
+                if (callback && keysProcessed == keys.length) callback();
               });
             }
             else {
               keysProcessed++;
-              if (keysProcessed == keys.length) callback();
+              if (callback && keysProcessed == keys.length) callback();
             }
-          })
+          });
         });
       });
-    }
+    };
 
     var getFreeId = function(callback) {
-      localforage.keys(function(err, keys) {
-        throwErr(err);
+      localforageKeys(function(keys) {
         num = 1;
         while (keys.indexOf('jtsa-dataSet-'+num) >= 0) num++;
         callback('jtsa-dataSet-'+num);
       });
     };
 
-    store.addDataSet = function(dataSet) {
-      getFreeId(function(id) {
-        dataSet.id = id;
-        dataSet.dateAdded = Date.now();
-        store.saveDataSet(dataSet);
-        store.dataSets.push(dataSet);
-        store.selectDataSet(dataSet);
-      });
-    };
-
-    store.removeDataSet = function(dataSet) {
-      if (window.confirm("Remove data set?"))
-      {
-        store.dataSets.splice(store.dataSets.indexOf(dataSet), 1);
-        localforage.removeItem(dataSet.id, throwErr);
-        if (store.selectedDataSet === dataSet) {
-          localforage.removeItem('jtsa-selectDataSetId', throwErr);
-          store.selectedDataSet = undefined;
+    var storageToForage = function(callback) {
+      if (callback && store.dataSets.length == 0) callback();
+      function processDataSet(i) {
+        if (i == store.dataSets.length()) {
+          if (callback) callback;
+        }
+        else {
+          getFreeId(function(id) {
+            store.dataSets[i].id = id;
+            store.saveDataSet(store.dataSets[i], function() {
+              var oldKey = 'tfa'+id.slice(4);
+              localStorage.removeItem(oldKey);
+              processDataSet(i + 1);
+            });
+          });
         }
       }
     };
 
-    store.selectDataSet = function(dataSet) {
-      localforage.setItem('jtsa-selectDataSetId', dataSet.id, throwErr);
-      store.selectedDataSet = dataSet;
-    };
-
-    store.saveDataSet = function(dataSet, callback) {
-      if (!dataSet) dataSet = store.selectedDataSet; 
-      dataSet.dateModified = Date.now();
-      localforage.setItem(dataSet.id, dataSet, function(err, value) {
-        throwErr(err);
-        callback(value)
-      });
-    };
-
-    // Remove old value from localStorage
-    localStorage.removeItem('tfa-selectDataSetId');
-    // Get datasets from localStorage (keep for backwards compatibility)
-    readLocalStorage()
-    // Convert any datasets from localStorage to localforage
-    // Remove dataset from localStorage if successful
-    // Read from localforage once all datasets are processed
-    var alertDone = function() {
-      console.log('Done reading datasets');
-    }
-    if (store.dataSets.length == 0) readLocalForage(alertDone);
-    else {
-      dataSetsProcessed = 0
-      store.dataSets.forEach(function(dataSet) {
-        getFreeId(function(id) {
-          dataSet.id = id;
-          store.saveDataSet(dataSet, function() {
-            var oldKey = 'tfa'+id.slice(4);
-            localStorage.removeItem(oldKey);
-            dataSetsProcessed++;
-            if (dataSetsProcessed == store.dataSets.length) readLocalForage(alertDone);
+    store.addDataSet = function(dataSet, callback) {
+      getFreeId(function(id) {
+        dataSet.id = id;
+        dataSet.dateAdded = Date.now();
+        store.saveDataSet(dataSet, function() {
+          store.dataSets.push(dataSet);
+          store.selectDataSet(dataSet, function() {
+            if (callback) callback();
           });
         });
       });
-    }
+    };
+
+    store.removeDataSet = function(dataSet, callback) {
+      if (window.confirm("Remove data set?"))
+      {
+        store.dataSets.splice(store.dataSets.indexOf(dataSet), 1);
+        localforageRemoveItem(dataSet.id, function() {
+          if (store.selectedDataSet === dataSet) {
+            localforageRemoveItem('jtsa-selectDataSetId', function() {
+              store.selectedDataSet = undefined;
+              if (callback) callback();
+            });
+          }
+          else if (callback) callback();
+        });
+      }
+    };
+
+    store.selectDataSet = function(dataSet, callback) {
+      localforageSetItem('jtsa-selectDataSetId', dataSet.id, function() {
+        store.selectedDataSet = dataSet;
+        if (callback) callback();
+      });
+    };
+
+    store.saveDataSet = function(dataSet, callback) {
+      if (!dataSet) dataSet = store.selectedDataSet;
+      dataSet.dateModified = Date.now();
+      localforageSetItem(dataSet.id, dataSet, function() {
+        if (callback) callback();
+      });
+    };
 
     // Config
 
-    store.saveConfig = function(config) {
-      localforage.setItem('jtsa-config', config, throwErr);
+    store.saveConfig = function(config, callback) {
+      localforageSetItem('jtsa-config', config, function() {
+        if (callback) callback();
+      });
     };
 
     store.getConfig = function(callback) {
-      localforage.getItem('jtsa-config', function(err, value) {
-        throwErr(err);
-        callback(value);
+      localforageGetItem('jtsa-config', function(config) {
+        callback(config);
       });
-    }
+    };
 
-    // Remove old config from localStorage
-    localStorage.removeItem('tfa-config');
+    // Initialisation
 
-    // Save default if no value exists in localforage
-    localforage.getItem('jtsa-config', function(err, value) {
-      throwErr(err);
-      if (!value) store.saveConfig(config.default())
-    })
+    store.init = function(callback) {
+      // Remove old values
+      localStorage.removeItem('tfa-selectDataSetId');
+      localStorage.removeItem('tfa-config');
+      // Convert old localStorage to localforage
+      readLocalStorage();
+      storageToForage(function() {
+        // Read localforage
+        readLocalforage(function() {
+          // Save default config if none is stored
+          store.getConfig(function(config) {
+            if (!config) {
+              store.saveConfig(config.default(), function() {
+                if (callback) callback();
+              });
+            }
+            else if (callback) callback();
+          });
+        })
+      });
+    };
 
     return store;
   }]);
