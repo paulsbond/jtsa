@@ -27,6 +27,9 @@
   app.run(
   ['$rootScope', '$location', 'store',
   function($rootScope, $location, store) {
+    store.init(function() {
+      $rootScope.$apply();
+    });
     $rootScope.$on('$routeChangeStart', function(event, next, current) {
       if (!store.selectedDataSet &&
          (next.originalPath == '/analysis' || next.originalPath == '/config')) {

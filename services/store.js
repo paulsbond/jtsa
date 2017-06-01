@@ -67,7 +67,7 @@
             if (/jtsa-dataSet-\d+/.test(key)) {
               localforageGetItem(key, function(dataSet) {
                 store.dataSets.push(dataSet);
-                if (dataSet.id == selectDataSetId) store.selectedDataSet = value;
+                if (dataSet.id == selectDataSetId) store.selectedDataSet = dataSet;
                 keysProcessed++;
                 if (callback && keysProcessed == keys.length) callback();
               });
@@ -178,8 +178,8 @@
         // Read localforage
         readLocalforage(function() {
           // Save default config if none is stored
-          store.getConfig(function(config) {
-            if (!config) {
+          store.getConfig(function(value) {
+            if (!value) {
               store.saveConfig(config.default(), function() {
                 if (callback) callback();
               });
