@@ -90,22 +90,22 @@
     };
 
     var storageToForage = function(callback) {
-      if (callback && store.dataSets.length == 0) callback();
       function processDataSet(i) {
-        if (i == store.dataSets.length()) {
-          if (callback) callback;
+        if (i == store.dataSets.length) {
+          if (callback) callback();
         }
         else {
+          var oldKey = store.dataSets[i].id;
           getFreeId(function(id) {
             store.dataSets[i].id = id;
             store.saveDataSet(store.dataSets[i], function() {
-              var oldKey = 'tfa'+id.slice(4);
               localStorage.removeItem(oldKey);
               processDataSet(i + 1);
             });
           });
         }
       }
+      processDataSet(0);
     };
 
     store.addDataSet = function(dataSet, callback) {
