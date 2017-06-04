@@ -35,6 +35,15 @@
       return plate.wells[id - 1].name;
     };
 
+    plate.getWellIdFromName = function(name) {
+      if (name.length == 2) name = name[0] + '0' + name[1];
+      for (var i = 0; i < plate.wells.length; i++) {
+        var well = plate.wells[i];
+        if (well.name == name) return well.id;
+      }
+      return -1;
+    };
+
     return plate;
   }]);
 })();
