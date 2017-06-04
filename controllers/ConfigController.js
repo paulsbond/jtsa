@@ -9,7 +9,9 @@
     $scope.models = models;
 
     $scope.save = function() {
-      store.saveConfig($scope.config);
+      store.saveConfig($scope.config, function() {
+        $scope.$apply();
+      });
     };
     $scope.load = function() {
       store.getConfig(function(defaultConfig) {
@@ -17,15 +19,24 @@
         $scope.config.yLabel = defaultConfig.yLabel;
         $scope.config.modelName = defaultConfig.modelName;
         $scope.config.tmName = defaultConfig.tmName;
+        $scope.$apply();
       });
     };
     $scope.reset = function() {
-      store.saveConfig(config.default());
+      store.saveConfig(config.default(), function() {
+        $scope.$apply();
+      });
     };
+
+    var saveDataSet = function() {
+      store.saveDataSet(store.selectedDataSet, function() {
+        $scope.$apply();
+      })
+    }
 
     var onConfigChange = function(newVal, oldVal) {
       if (newVal == oldVal) return;
-      store.saveDataSet();
+      saveDataSet();
     };
     $scope.$watch('config', onConfigChange, true);
 
@@ -36,7 +47,7 @@
         $scope.config.tmName = 'Midpoint';
       }
       regression.fitDataSet(store.selectedDataSet);
-      store.saveDataSet();
+      saveDataSet();
     };
     $scope.$watch('config.modelName', onModelChange);
 

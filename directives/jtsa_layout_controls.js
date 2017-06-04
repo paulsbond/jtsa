@@ -13,7 +13,13 @@
         scope.$parent.$broadcast("layoutChanged");
       }
 
-      scope.$on('layoutChanged', function() { store.saveDataSet(); });
+      var saveDataSet = function() {
+        store.saveDataSet(store.selectedDataSet, function() {
+          scope.$apply();
+        })
+      }
+
+      scope.$on('layoutChanged', saveDataSet);
     };
 
     return {

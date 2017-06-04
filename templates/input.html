@@ -37,7 +37,7 @@
     <tbody>
       <tr ng-repeat="dataSet in store.dataSets | orderBy:'name'"
           ng-class="{selected: dataSet === store.selectedDataSet}"
-          ng-click="store.selectDataSet(dataSet)">
+          ng-click="selectDataSet(dataSet)">
         <td>{{dataSet.name}}</td>
         <td>{{dataSet.dateAdded | date:'yyyy-MM-dd HH:mm'}}</td>
         <td>{{dataSet.dateModified | date:'yyyy-MM-dd HH:mm'}}</td>

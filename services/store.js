@@ -145,7 +145,6 @@
     };
 
     store.saveDataSet = function(dataSet, callback) {
-      if (!dataSet) dataSet = store.selectedDataSet;
       dataSet.dateModified = Date.now();
       localforageSetItem(dataSet.id, dataSet, function() {
         if (callback) callback();
