@@ -100,7 +100,7 @@
       if (points.length == 0) throw new Error('No data points found');
       // Check values are valid
       points.forEach(function(point) {
-        var well = /^\d+$/.test(point.w) ? +point.w : plate.getWellIdFromName(point.w);
+        var well = /^ *\d+ *$/.test(point.w) ? +point.w : plate.getWellIdFromName(point.w);
         var temp = +point.t;
         var flur = +point.f;
         if (well < 1 || well > 96) throw new Error("Invalid well value: '" + point.w + "'");
