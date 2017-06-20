@@ -8,7 +8,7 @@
 
     localforage.config({
       name: 'jtsa',
-      description: 'Data storage for the jTSA app'
+      description: 'Data storage for the JTSA app'
     });
 
     var throwErr = function(err) {
