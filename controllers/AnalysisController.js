@@ -54,7 +54,8 @@
 
     $scope.downloadChart = function() {
       var content = d3.select("jtsa-curve-chart").html();
-      file.save('chart.svg', 'image/svg+xml', content);
+      var filename = store.selectedDataSet.name + '.svg'
+      file.save(filename, 'image/svg+xml', content);
     };
 
     var getSelectedWells = function() {

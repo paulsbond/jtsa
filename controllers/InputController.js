@@ -74,7 +74,8 @@
     }
 
     $scope.exportDataSet = function(event, dataSet) {
-      file.save('dataset.json', 'application/json', angular.toJson(dataSet));
+      var filename = dataSet.name + '.json';
+      file.save(filename, 'application/json', angular.toJson(dataSet));
       event.stopPropagation();
     };
 

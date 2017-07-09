@@ -133,7 +133,8 @@
                      well.t      + ',' + well.a       + ',' +
                      well.c      + ',' + well.comment + '\n';
         });
-        file.save('data.csv', 'text/csv', content);
+        var filename = store.selectedDataSet.name + '.csv';
+        file.save(filename, 'text/csv', content);
       };
 
     };
