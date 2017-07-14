@@ -1,5 +1,6 @@
-# jtsa0
-JavaScript Thermal Shift Analysis - Angular 1 ES5 version
+# JTSA
+JavaScript Thermal Shift Analysis
 
-This version requires no compilation.
-Simply copy a released version to a web server and the application should work.
+Thermal shift, also known as differential scanning fluorimetry or thermoflour, is a technique for determining protein stability.
+JTSA is a web application that provides automatic data parsing, curve fitting and visualisation for analysing thermal shift data.
+No compilation is needed. Simply copy a released version to a web server and the application will work.
