@@ -21,21 +21,23 @@ It also aims to provide a simple method of analysing the data.
 <section id="data_storage">
 <h2>Data Storage</h2>
 <p class="long">
-All data used in this application are held locally on the computer using it
-with nothing uploaded to any remote servers.
-Any data saved between sessions are saved using
-<a href="http://www.w3schools.com/html/html5_webstorage.asp">local storage</a>.
+All data used in this application are held locally on the computer using it with nothing uploaded to any remote servers.
+Any data saved between sessions are saved using <a href="https://github.com/localForage/localForage">localforage</a>.
+This is a JavaScript library that will save data in IndexedDB if availble, otherwise it will fallback to using WebSQL or localStorage.
+These are all methods of storing data locally in the browser.
 This site does not use cookies.
 </p>
 <p class="long">
-It is recommended that data sets are removed after analysis
-as most browsers impose a local storage quota and problems could occur as you approach this limit.
+This type of storage, while good for data security, has some limitations.
+If using WebSQL or localStorage the browser may impose relatively small limits (e.g. 5 MB) on the amount of data being stored.
 Depending on the size of your data and the browser you are using the amount of storage available will vary.
+If you reach the limit you may either see an error appear or your browser will ask you to allow the storage of more data.
+Also, clearing browsing data from your browser's cache could remove the application's stored data.
 </p>
 <p>
-Data sets can be removed from browser local storage while maintaining the plate layout and fitted curves
-using the <b>Export</b> function on the <b>Input</b> page.
-Exported data sets can be imported again using the <b>Import Existing Data Set</b> form.
+For these reasons it is recommended that data sets are exported and removed after analysis.
+This can be done using the <b>Export</b> function on the <b>Input</b> page.
+Exported data sets retain the plate layout and fitted curves, and can be imported again using the <b>Import Existing Data Set</b> form.
 </p>
 </section>
 
@@ -43,18 +45,31 @@ Exported data sets can be imported again using the <b>Import Existing Data Set</
 <h2>Data Input</h2>
 <p class="long">
 Input files can be uploaded using the <b>New Data Set</b> form.
-Files must be in a delimited file format (e.g. CSV or TSV)
-and contain a header row with column names <b>Well</b>, <b>Temperature</b> and <b>Fluorescence</b> (case-insensitive).
-Other columns will be ignored.
-Any number of lines can be present before the header row provided one of those lines doesn't contain these three keywords.
+The main file format is based off the columnal instrument data exported from the Agilent MxPro software.
+The parser for this file format has been made more flexible to a number of differences.
+The requirements for it are described below:
 </p>
 <p class="long">
+Files can be in any delimited file format (e.g. CSV or TSV)
+and must contain a header row with column names <b>Well</b>, <b>Temperature</b> and <b>Fluorescence</b> (case-insensitive).
+Other columns will be ignored.
+Any number of lines can be present before the header row provided one of those lines doesn't contain these three keywords.
 Each row of the input file should represent a fluorescence reading.
 There can be multiple readings at a single temperature,
 which could be the case when handling raw data from a qPCR machine.
-The <b>Well</b> column is expected to contain integers representing well identifiers for a 96 well plate (1 = A01, 2 = A02, etc.)
-A small <a href="data/example.csv" download>example file</a> is provided as a reference.
+The <b>Well</b> column can contain either well names or integers (A01 = A1 = 1, A02 = A2 = 2, etc.)
+The fluorescence and temperature columns must contain numbers.
 </p>
+<p class="long">
+Support has also been added for files exported from Applied Biosystems SDS 2.4 software and BioRad CFX 3.1+ software.
+If support for aditional file formats is required please get in touch and provide an example file.
+Example files for currently suppoted formats are provided below:
+</p>
+<ul>
+  <li><a href="data/mxp_example.txt" download>Agilent MxPro</a></li>
+  <li><a href="data/sds_example.txt" download>Applied Biosystems SDS</a></li>
+  <li><a href="data/cfx_example.txt" download>BioRad CFX</a></li>
+</ul>
 </section>
 
 <section id="curve_fitting">
@@ -152,7 +167,7 @@ The <b>Load Default</b> will load the settings saved in the default configuratio
 and the the <b>Reset Default</b> button will provide a factory reset of the default configuration. 
 </p>
 <p class="long">
-The <b>Curve Fitting</b> options let you switch between the <b>Sigmoig-5</b> and <b>Boltzmann</b> equations,
+The <b>Curve Fitting</b> options let you switch between the <b>Sigmoid-5</b> and <b>Boltzmann</b> equations,
 and to choose which melting temperature estimation you would like to report on.
 Changing the <b>Model Function</b> will refit all curves automatically.
 There are also options to change the chart axis labels, which can be left blank to remove the label.

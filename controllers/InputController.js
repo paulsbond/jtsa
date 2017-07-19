@@ -31,12 +31,15 @@
     $scope.submitInputForm = function() {
       var dataSet = {};
       dataSet.name = $scope.inputForm.name;
-      dataSet.config = store.getConfig();
-      file.read($scope.inputForm.file, function(contents) {
-        dataSet.wells = parser.parseContents(contents);
-        regression.fitDataSet(dataSet);
-        store.addDataSet(dataSet);
-        $scope.$apply(function() { resetInputForm(); });
+      store.getConfig(function(config) {
+        dataSet.config = config;
+        file.read($scope.inputForm.file, function(contents) {
+          dataSet.wells = parser.parseContents(contents);
+          regression.fitDataSet(dataSet);
+          store.addDataSet(dataSet, function() {
+            $scope.$apply(function() { resetInputForm(); });
+          });
+        });
       });
     };
 
@@ -58,13 +61,21 @@
       file.read($scope.importForm.file, function(contents) {
         var dataSet = angular.fromJson(contents);
         dataSet.name = $scope.importForm.name;
-        store.addDataSet(dataSet);
-        $scope.$apply(function() { resetImportForm(); });
+        store.addDataSet(dataSet, function() {
+          $scope.$apply(function() { resetImportForm(); });
+        });
       });
     };
 
+    $scope.selectDataSet = function(dataSet) {
+      store.selectDataSet(dataSet, function() {
+        $scope.$apply();
+      });
+    }
+
     $scope.exportDataSet = function(event, dataSet) {
-      file.save('dataset.json', 'application/json', angular.toJson(dataSet));
+      var filename = dataSet.name + '.json';
+      file.save(filename, 'application/json', angular.toJson(dataSet));
       event.stopPropagation();
     };
 

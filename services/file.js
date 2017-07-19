@@ -4,11 +4,17 @@
   app.factory('file', function() {
     var file = {};
 
+    var adaptName = function(name) {
+      name = name.replace(/ /g, '_');
+      name = name.replace(/[^A-z0-9_\.]/g, '');
+      return name;
+    }
+
     file.save = function(name, type, content) {
       var blob = new Blob([content], { type: type });
       var link = document.createElement('a');
       link.setAttribute('href', URL.createObjectURL(blob));
-      link.setAttribute('download', name);
+      link.setAttribute('download', adaptName(name));
       link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
@@ -22,6 +28,10 @@
       };
       reader.readAsText(file);
     };
+
+    file.toFileName = function(name) {
+
+    }
 
     return file;
   });

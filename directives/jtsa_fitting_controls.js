@@ -25,8 +25,9 @@
       };
 
       var onFittingChanged = function() {
-        store.saveDataSet();
-        resetForm();
+        store.saveDataSet(store.selectedDataSet, function() {
+          scope.$apply(resetForm);
+        });
       };
 
       var resetForm = function() {
