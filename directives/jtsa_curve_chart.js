@@ -32,6 +32,23 @@
       return next.hex;
     };
 
+    var changeColour = function() {
+      var field = d3.select(this.parentNode);
+      var wellId = field.data()[0].id;
+      for (var i = 0; i < colours.length; i++) {
+        var index = colours[i].ids.indexOf(wellId);
+        if (index != -1) {
+          colours[i].ids.splice(index, 1);
+          i++;
+          if (i === colours.length) i = 0;
+          colours[i].ids.push(wellId);
+          field.style("stroke", colours[i].hex);
+          field.style("fill", colours[i].hex);
+          return;
+        }
+      }
+    };
+
     var removeColour = function(well) {
       for (var i = 0; i < colours.length; i++) {
         var index = colours[i].ids.indexOf(well.id);
@@ -207,6 +224,7 @@
             .attr("class", "line")
             .style("stroke-width", "1.5")
             .style("fill", "none")
+            .on("click", changeColour)
             .on("mouseover", highlight)
             .on("mouseout", unhighlight);
 
@@ -223,6 +241,7 @@
             .attr("class", "dot")
             .attr("r", 2)
             .style("stroke-width", "0")
+            .on("click", changeColour)
             .on("mouseover", highlight)
             .on("mouseout", unhighlight);
 
