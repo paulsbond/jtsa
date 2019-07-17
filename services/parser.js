@@ -24,7 +24,7 @@
       for (var i = 0; i < lines.length; i++) {
         if (lines[i].indexOf('(Reading 1...N)') != -1) return 'SDS';
       }
-      if (lines[0].indexOf('Temperature\tA1') == 0) return 'CFX'
+      if (lines[0].trim().indexOf('Temperature\tA1') == 0) return 'CFX'
       throw new Error('File format not recognised');
     };
 
@@ -79,10 +79,10 @@
     // Parse BioRad CFX 3.1+ file
     var parseCFX = function(contents) {
       var lines = contents.match(/[^\r\n]+/g);
-      var first_line = lines[0].split('\t');
+      var first_line = lines[0].trim().split('\t');
       var points = [];
       for (var row = 1; row < lines.length; row++) {
-        var line = lines[row].split('\t');
+        var line = lines[row].trim().split('\t');
         for (var col = 1; col < line.length; col++) {
           points.push({w: first_line[col], t: line[0], f: line[col]});
         }
