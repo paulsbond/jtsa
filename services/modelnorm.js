@@ -1,10 +1,10 @@
 (function() {
   var app = angular.module('app');
 
-  app.factory('analysis',
+  app.factory('modelnorm',
   ['models', 'regression', 'store',
   function(models, regression, store) {
-    var analysis = {};
+    var modelnorm = {};
 
     var normalise = function(well, points) {
       var minF = well.fit ? well.fit.minF : well.minF;
@@ -15,7 +15,7 @@
       });
     };
 
-    analysis.model = function(well) {
+    modelnorm.model = function(well) {
       if (!well.fit) return [];
       points = [];
       var model = models[store.selectedDataSet.config.modelName];
@@ -28,14 +28,14 @@
       return points;
     };
 
-    analysis.normalisedModel = function(well) {
-      return normalise(well, analysis.model(well));
+    modelnorm.normalisedModel = function(well) {
+      return normalise(well, modelnorm.model(well));
     };
 
-    analysis.normalisedRaw = function(well) {
+    modelnorm.normalisedRaw = function(well) {
       return normalise(well, well.raw);
     }
 
-    return analysis;
+    return modelnorm;
   }]);
 })();

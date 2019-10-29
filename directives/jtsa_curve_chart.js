@@ -2,12 +2,12 @@
   var app = angular.module('app');
 
   app.directive('jtsaCurveChart',
-  ['analysis', 'regression', 'store',
-  function(analysis, regression, store) {
+  ['modelnorm', 'regression', 'store',
+  function(modelnorm, regression, store) {
 
-    var model = analysis.model;
-    var normalisedModel = analysis.normalisedModel;
-    var normalisedRaw = analysis.normalisedRaw;
+    var model = modelnorm.model;
+    var normalisedModel = modelnorm.normalisedModel;
+    var normalisedRaw = modelnorm.normalisedRaw;
 
     var colours = [
       {hex:'#1f77b4', ids:[]},
